@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sacred Spaces, Safe Homes: feasibility copilot</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⛪</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=Spectral:ital,wght@0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#EEF2EE; --sheet:#F8FAF7; --ink:#1F2E3A; --ink-2:#4A5A63; --line:#B9C5BF;
+  --green:#2F6B4F; --green-soft:#DCE8E0; --ochre:#B8892B; --ochre-soft:#F1E6CC;
+  --flag:#A23B2A; --flag-soft:#F4DDD8; --unit:#2F6B4F; --church:#7A8A93; --park:#C9D2CD;
+  --serif:"Spectral",Georgia,"Times New Roman",serif;
+  --sans:"Public Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#141C21; --sheet:#1B252B; --ink:#E4EAE6; --ink-2:#A9B6B0; --line:#3A4A50;
+    --green:#7DC3A0; --green-soft:#21362C; --ochre:#E0B556; --ochre-soft:#3A3120;
+    --flag:#F08C78; --flag-soft:#3D2420; --unit:#6FB892; --church:#8B9BA3; --park:#2E3B40;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#141C21; --sheet:#1B252B; --ink:#E4EAE6; --ink-2:#A9B6B0; --line:#3A4A50;
+  --green:#7DC3A0; --green-soft:#21362C; --ochre:#E0B556; --ochre-soft:#3A3120;
+  --flag:#F08C78; --flag-soft:#3D2420; --unit:#6FB892; --church:#8B9BA3; --park:#2E3B40;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 16px/1.55 var(--sans)}
+img,svg{max-width:100%}
+a{color:var(--green)}
+:focus-visible{outline:3px solid var(--ochre);outline-offset:2px}
+.wrap{max-width:1180px;margin:0 auto;padding:28px 20px 64px}
+
+header.top{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;border-bottom:2px solid var(--ink);padding-bottom:18px}
+h1{font:600 clamp(2rem,4.6vw,3.25rem)/1.05 var(--serif);margin:0;letter-spacing:-.01em;max-width:16ch}
+.lede{color:var(--ink-2);max-width:52ch;margin:10px 0 0}
+.guard{font-size:.85rem;color:var(--ink-2);max-width:34ch;border-left:3px solid var(--ochre);padding-left:12px}
+
+.grid{display:grid;grid-template-columns:minmax(300px,380px) 1fr;gap:28px;margin-top:28px;align-items:start}
+@media (max-width:860px){.grid{grid-template-columns:1fr}}
+
+form.inputs{background:var(--sheet);border:1px solid var(--line);border-radius:6px;padding:20px}
+fieldset{border:0;padding:0;margin:0 0 18px}
+legend{font:600 1.1rem var(--serif);margin-bottom:8px;padding:0}
+label{display:block;font-size:.85rem;font-weight:600;margin:10px 0 4px}
+.hint{font-weight:400;color:var(--ink-2)}
+input,select,textarea{width:100%;font:inherit;font-size:.95rem;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:8px 10px}
+textarea{min-height:150px;font-size:.82rem;line-height:1.45;resize:vertical}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+button{font:600 .95rem var(--sans);border-radius:4px;padding:10px 16px;cursor:pointer;border:1.5px solid var(--ink);background:transparent;color:var(--ink)}
+button.primary{background:var(--green);border-color:var(--green);color:var(--sheet)}
+button:disabled{opacity:.55;cursor:wait}
+.btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+.small{font-size:.8rem;padding:6px 10px}
+
+/* the plat */
+.plat{background:var(--sheet);border:1px solid var(--line);border-radius:6px;padding:18px}
+.plat-head{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:baseline}
+.plat-head h2{font:600 1.35rem var(--serif);margin:0}
+.plat svg{display:block;width:100%;height:auto;margin-top:10px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem;color:var(--ink-2);margin-top:8px}
+.sw{display:inline-block;width:12px;height:12px;vertical-align:-1px;margin-right:5px;border:1px solid var(--line)}
+.math{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);margin-top:14px}
+.math div{background:var(--sheet);padding:10px 12px}
+.math b{display:block;font:600 1.35rem var(--serif)}
+.math span{font-size:.8rem;color:var(--ink-2)}
+.math .bind{background:var(--ochre-soft)}
+
+section.out{margin-top:36px}
+section.out > h2{font:600 1.7rem var(--serif);margin:0 0 4px}
+.sub{color:var(--ink-2);margin:0 0 16px;max-width:70ch}
+.headline{font:500 1.45rem/1.35 var(--serif);border-left:4px solid var(--green);padding:6px 0 6px 16px;margin:0 0 18px;max-width:60ch}
+.verdict{display:inline-block;font-size:.85rem;font-weight:600;padding:3px 10px;border-radius:3px;margin-bottom:10px}
+.v-promising{background:var(--green-soft);color:var(--green)}
+.v-relief{background:var(--ochre-soft);color:var(--ochre)}
+.v-difficult{background:var(--flag-soft);color:var(--flag)}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem;min-width:560px}
+th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--line)}
+th{font-weight:600;font-size:.82rem;color:var(--ink-2)}
+.cite{font-size:.8rem;font-weight:600;white-space:nowrap}
+.cite.ok{color:var(--green)}
+.cite.no{color:var(--flag)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media (max-width:760px){.two{grid-template-columns:1fr}}
+.obst{border-top:2px solid var(--ink);padding:12px 0 16px}
+.obst h3{font:600 1.1rem var(--serif);margin:0 0 6px}
+.obst p{margin:4px 0}
+.obst .counter{background:var(--green-soft);padding:8px 12px;border-radius:4px;margin-top:8px}
+.prelim{background:var(--ochre-soft);border:1px dashed var(--ochre);padding:14px 16px;border-radius:4px}
+.prelim h3{font:600 1.1rem var(--serif);margin:0 0 6px}
+ul.tight{margin:6px 0;padding-left:20px}
+.status{font-size:.9rem;color:var(--ink-2);margin-top:10px;min-height:1.4em}
+.status.err{color:var(--flag)}
+
+/* slides */
+.deck{border:1px solid var(--line);border-radius:6px;background:var(--sheet);overflow:hidden}
+.slide{aspect-ratio:16/9;padding:clamp(18px,4vw,48px);display:flex;flex-direction:column;justify-content:center;background:var(--ink);color:var(--paper)}
+.slide h3{font:600 clamp(1.3rem,3.2vw,2.3rem)/1.15 var(--serif);margin:0 0 14px;max-width:24ch}
+.slide ul{margin:0;padding-left:1.2em;font-size:clamp(.85rem,1.6vw,1.1rem);max-width:60ch}
+.slide li{margin:4px 0}
+.slide .num{font-size:.8rem;opacity:.7;margin-bottom:10px}
+.deck-bar{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 14px;flex-wrap:wrap}
+.notes{font-size:.88rem;color:var(--ink-2);padding:0 14px 14px}
+.onepager{background:var(--sheet);border:1px solid var(--line);border-radius:6px;padding:24px;max-width:72ch}
+.onepager h3{font:600 1.6rem/1.2 var(--serif);margin:0}
+.onepager .tag{color:var(--ink-2);font-style:italic;font-family:var(--serif);margin:4px 0 14px}
+.onepager h4{font:600 1.05rem var(--serif);margin:16px 0 4px}
+.onepager p{margin:0}
+.tp h3{font:600 1.15rem var(--serif);margin:0 0 6px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 16px}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--paper)}
+footer{margin-top:48px;border-top:1px solid var(--line);padding-top:14px;font-size:.82rem;color:var(--ink-2);max-width:80ch}
+.hidden{display:none !important}
+.signin{max-width:420px;margin:12vh auto;background:var(--sheet);border:1px solid var(--line);border-radius:6px;padding:28px}
+.signin h1{font-size:2rem;max-width:none}
+.signin .demo{background:var(--green-soft);border-radius:4px;padding:10px 12px;font-size:.88rem;margin:14px 0}
+.acct{display:flex;gap:12px;align-items:center;justify-content:flex-end;font-size:.85rem;color:var(--ink-2);margin-bottom:10px;flex-wrap:wrap}
+.mockflag{background:var(--ochre-soft);color:var(--ink);padding:2px 8px;border-radius:3px}
+@media (prefers-reduced-motion:no-preference){ .unitblk{transition:opacity .25s} }
+</style>
+</head>
+<body>
+<main class="wrap hidden" id="signinView">
+  <form class="signin" id="signinForm">
+    <h1>Sacred Spaces, Safe Homes</h1>
+    <p class="lede">Sign in to explore what your church lot could become.</p>
+    <p class="demo" id="demoHint">Testing the prototype? Use the demo account email and password you were given.</p>
+    <label for="email">Email</label>
+    <input id="email" type="email" autocomplete="username" required>
+    <label for="pw">Password</label>
+    <input id="pw" type="password" autocomplete="current-password" required>
+    <div class="btns" style="margin-top:16px"><button class="primary" type="submit" id="signinBtn">Sign in</button></div>
+    <p class="status" id="signinStatus" role="status"></p>
+  </form>
+</main>
+<div class="wrap hidden" id="appView">
+<div class="acct"><span class="mockflag hidden" id="mockFlag">Sample-output mode: Claude is not being called</span><span id="who"></span><button type="button" class="small" id="signout">Sign out</button></div>
+<header class="top">
+  <div>
+    <h1>What could your church lot become?</h1>
+    <p class="lede">Enter your property and the zoning rules that apply. You'll get a plain-language feasibility read, the obstacles to expect, and a presentation for your board and city council.</p>
+  </div>
+  <p class="guard">An introductory accelerator, not a decision. Every finding here needs review by an architect, land-use attorney, or city planner before you act on it.</p>
+</header>
+
+<div class="grid">
+<form class="inputs" id="f" autocomplete="off">
+  <fieldset>
+    <legend>Your church and site</legend>
+    <label for="church">Church name</label>
+    <input id="church" value="Grace Fellowship Church">
+    <label for="addr">Address</label>
+    <input id="addr" value="1420 Elm Street">
+    <label for="city">City or county</label>
+    <input id="city" value="Sample City (demo)">
+    <div class="row">
+      <div><label for="w">Lot frontage <span class="hint">ft</span></label><input id="w" type="number" min="40" value="180"></div>
+      <div><label for="d">Lot depth <span class="hint">ft</span></label><input id="d" type="number" min="40" value="240"></div>
+    </div>
+    <div class="row">
+      <div><label for="fp">Church building <span class="hint">sq ft</span></label><input id="fp" type="number" min="0" value="9000"></div>
+      <div><label for="keep">Parking to keep <span class="hint">spaces</span></label><input id="keep" type="number" min="0" value="40"></div>
+    </div>
+    <label for="type">Housing type</label>
+    <select id="type">
+      <option value="micro">Micro-cottages (about 400 sq ft)</option>
+      <option value="cottage">Cottages (about 700 sq ft)</option>
+      <option value="town">Townhomes (2 stories)</option>
+    </select>
+  </fieldset>
+  <fieldset>
+    <legend>Zoning rules</legend>
+    <label for="zone">Zoning district</label>
+    <input id="zone" value="R-3 Medium Density Residential">
+    <div class="row3">
+      <div><label for="sf">Front <span class="hint">ft</span></label><input id="sf" type="number" min="0" value="20"></div>
+      <div><label for="ss">Side <span class="hint">ft</span></label><input id="ss" type="number" min="0" value="7"></div>
+      <div><label for="sr">Rear <span class="hint">ft</span></label><input id="sr" type="number" min="0" value="20"></div>
+    </div>
+    <div class="row">
+      <div><label for="dens">Lot area per unit <span class="hint">sq ft</span></label><input id="dens" type="number" min="100" value="2000"></div>
+      <div><label for="pk">Parking per unit</label><input id="pk" type="number" min="0" step="0.25" value="1.5"></div>
+    </div>
+    <label for="code">Zoning code text <span class="hint">paste the sections that apply. Findings will cite only what's here.</span></label>
+    <textarea id="code"></textarea>
+    <div class="btns"><button type="button" class="small" id="loadSample">Load sample code (mock)</button><button type="button" class="small" id="clearCode">Clear</button></div>
+  </fieldset>
+  <div class="btns">
+    <button type="button" class="primary" id="run">Get feasibility read</button>
+  </div>
+  <p class="status" id="runStatus" role="status"></p>
+</form>
+
+<div>
+  <div class="plat">
+    <div class="plat-head">
+      <h2 id="platTitle">Site sketch</h2>
+      <span class="hint" style="font-size:.85rem">Illustrative massing. Not a site plan.</span>
+    </div>
+    <svg id="svg" role="img" aria-label="Illustrative site sketch of the lot, setbacks, church, parking and housing"></svg>
+    <div class="legend">
+      <span><i class="sw" style="background:var(--church)"></i>Church</span>
+      <span><i class="sw" style="background:var(--park)"></i>Parking kept</span>
+      <span><i class="sw" style="background:var(--unit)"></i>Housing units</span>
+      <span><i class="sw" style="border:1.5px dashed var(--ochre);background:transparent"></i>Setback line</span>
+    </div>
+    <div class="math" id="math"></div>
+    <p class="status" id="calcNote"></p>
+  </div>
+</div>
+</div>
+
+<section class="out hidden" id="feas">
+  <h2>Feasibility snapshot</h2>
+  <p class="sub">Written from your inputs and the code text you supplied. Anything marked “Unverified” was not found in that text.</p>
+  <span class="verdict" id="verdict"></span>
+  <p class="headline" id="headline"></p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Rule</th><th>What it means for your lot</th><th>Source</th></tr></thead>
+    <tbody id="constraints"></tbody>
+  </table></div>
+
+  <h2 style="font:600 1.35rem var(--serif);margin:28px 0 8px">Obstacles to expect</h2>
+  <div class="two" id="obstacles"></div>
+
+  <div class="two" style="margin-top:20px">
+    <div class="prelim">
+      <h3>Financing sketch: preliminary</h3>
+      <p style="margin:0 0 6px;font-size:.88rem">Illustrative only. A housing finance advisor must confirm eligibility and terms.</p>
+      <ul class="tight" id="financing"></ul>
+    </div>
+    <div>
+      <h3 style="font:600 1.1rem var(--serif);margin:0 0 6px">Questions for your experts</h3>
+      <ul class="tight" id="questions"></ul>
+    </div>
+  </div>
+  <div class="btns" style="margin-top:22px">
+    <button type="button" class="primary" id="makePres">Create presentation materials</button>
+  </div>
+  <p class="status" id="presStatus" role="status"></p>
+</section>
+
+<section class="out hidden" id="pres">
+  <h2>Presentation materials</h2>
+  <p class="sub">Drafts for you to edit. Check every number against your experts' review before sharing.</p>
+  <div class="tabs" role="tablist">
+    <button type="button" role="tab" aria-selected="true" data-tab="slides">Slides</button>
+    <button type="button" role="tab" aria-selected="false" data-tab="one">One-pager</button>
+    <button type="button" role="tab" aria-selected="false" data-tab="talk">Talking points</button>
+  </div>
+  <div data-panel="slides">
+    <div class="deck">
+      <div class="slide" id="slide"></div>
+      <div class="deck-bar">
+        <button type="button" class="small" id="prev">Previous</button>
+        <span id="slideCount" class="hint"></span>
+        <button type="button" class="small" id="next">Next</button>
+      </div>
+      <p class="notes" id="slideNotes"></p>
+    </div>
+  </div>
+  <div data-panel="one" class="hidden"><div class="onepager" id="onepager"></div></div>
+  <div data-panel="talk" class="hidden"><div class="two" id="talk"></div></div>
+  <div class="btns" style="margin-top:18px">
+    <button type="button" id="save" class="hidden">Save presentation file</button>
+  </div>
+  <p class="status" id="saveStatus" role="status"></p>
+</section>
+
+<footer>
+  Built from the Track 3.1 brief, “Sacred Spaces, Safe Homes.” The sample zoning code is mock data for demonstration and does not describe any real jurisdiction. This tool does not make legal, zoning, or financial determinations and does not replace architects, land-use attorneys, or city planners.
+</footer>
+</div>
+
+<script>
+const SAMPLE_CODE = `SAMPLE CITY ZONING ORDINANCE (MOCK DATA FOR DEMONSTRATION)
+
+Sec. 17.20.030 R-3 Medium Density Residential – Permitted uses.
+(a) Single-family, two-family and multifamily dwellings up to 4 units per structure.
+(b) Cottage court developments of 4 to 16 dwellings, each not exceeding 850 sq ft of floor area.
+(c) Religious assembly is a conditional use; residential uses accessory to or co-located with an existing religious assembly use are permitted subject to Sec. 17.62.
+
+Sec. 17.20.040 R-3 Development standards.
+(a) Minimum lot area per dwelling unit: 2,000 sq ft.
+(b) Maximum height: 35 ft.
+(c) Setbacks: front 20 ft; interior side 7 ft; rear 20 ft.
+(d) Maximum lot coverage: 50%.
+
+Sec. 17.44.020 Off-street parking requirements.
+(a) Dwelling units: 1.5 spaces per unit; 1.0 per unit for units under 600 sq ft.
+(b) Places of religious assembly: 1 space per 4 fixed seats in the main assembly area.
+(c) Shared parking among uses with different peak hours may reduce combined requirements by up to 30% with an approved shared-parking analysis.
+
+Sec. 17.62.010 Housing on religious-institution land.
+Affordable housing on property owned by a religious institution may receive a density bonus of up to 25% where at least 50% of units are income-restricted at or below 80% of area median income for 30 years.
+
+Sec. 17.88.010 Variances.
+The Board of Zoning Appeals may grant variances from development standards upon findings of practical difficulty. Notice to property owners within 300 ft is required.`;
+
+const TYPES = {
+  micro:{label:"micro-cottages", fpW:16, fpD:25, sqft:400, smallUnit:true},
+  cottage:{label:"cottages", fpW:24, fpD:30, sqft:700, smallUnit:false},
+  town:{label:"townhomes", fpW:20, fpD:36, sqft:1400, smallUnit:false}
+};
+const STALL = 330; // sq ft per space incl. aisle
+const $ = id => document.getElementById(id);
+const num = id => Math.max(0, parseFloat($(id).value) || 0);
+
+$("code").value = SAMPLE_CODE;
+$("loadSample").onclick = () => { $("code").value = SAMPLE_CODE; };
+$("clearCode").onclick = () => { $("code").value = ""; $("code").focus(); };
+
+function readInputs(){
+  return {
+    church:$("church").value.trim(), address:$("addr").value.trim(), city:$("city").value.trim(),
+    w:num("w"), d:num("d"), footprint:num("fp"), keep:num("keep"), type:$("type").value,
+    zone:$("zone").value.trim(), front:num("sf"), side:num("ss"), rear:num("sr"),
+    dens:num("dens")||2000, pk:num("pk"), code:$("code").value.trim()
+  };
+}
+
+function calc(i){
+  const t = TYPES[i.type];
+  const lot = i.w*i.d;
+  const envW = Math.max(0, i.w - 2*i.side), envD = Math.max(0, i.d - i.front - i.rear);
+  const env = envW*envD;
+  const keepArea = i.keep*STALL;
+  const housingLand = Math.max(0, env - i.footprint - keepArea);
+  const byDensity = Math.floor(lot / i.dens);
+  const pkPer = (t.smallUnit && i.pk>1) ? i.pk : i.pk; // code may allow lower; shown as note
+  const perUnitLand = (t.fpW*t.fpD) + pkPer*STALL;
+  const byLand = Math.floor(housingLand*0.7 / perUnitLand);
+  const units = Math.max(0, Math.min(byDensity, byLand));
+  const binding = byDensity <= byLand ? "density" : "land and parking";
+  return {t, lot, envW, envD, env, keepArea, housingLand, byDensity, byLand, units, binding, perUnitLand, unitParking: Math.ceil(units*i.pk)};
+}
+
+function drawPlat(i,c){
+  const pad = 34, W = i.w, D = i.d;
+  const svg = $("svg");
+  const vbW = W + pad*2, vbH = D + pad*2 + 10;
+  svg.setAttribute("viewBox", `0 0 ${vbW} ${vbH}`);
+  const ex = pad + i.side, ey = pad + i.rear; // rear at top, street at bottom
+  const ew = c.envW, ed = c.envD;
+  let s = "";
+  s += `<rect x="${pad}" y="${pad}" width="${W}" height="${D}" fill="var(--paper)" stroke="var(--ink)" stroke-width="2"/>`;
+  s += `<rect x="${ex}" y="${ey}" width="${ew}" height="${ed}" fill="none" stroke="var(--ochre)" stroke-width="1.5" stroke-dasharray="5 4"/>`;
+  // church at street-side left
+  const cw = Math.min(ew*0.55, Math.sqrt(i.footprint*1.3)) || 0;
+  const cd = cw ? Math.min(ed, i.footprint/cw) : 0;
+  const cy = ey + ed - cd;
+  if (cw>0 && cd>0) {
+    s += `<rect x="${ex}" y="${cy}" width="${cw}" height="${cd}" fill="var(--church)"/>`;
+    s += `<text x="${ex+cw/2}" y="${cy+cd/2+4}" text-anchor="middle" font-size="11" font-family="Public Sans,sans-serif" fill="var(--sheet)">Church</text>`;
+  }
+  // parking beside church, overflow strip above
+  const pw = ew - cw;
+  let remaining = c.keepArea;
+  const besideArea = Math.max(0, pw*cd);
+  const beside = Math.min(remaining, besideArea);
+  if (beside>0 && pw>0) { const ph = beside/pw; s += `<rect x="${ex+cw}" y="${ey+ed-ph}" width="${pw}" height="${ph}" fill="var(--park)" stroke="var(--line)"/>`; }
+  remaining -= beside;
+  let topOfFront = ey + ed - cd;
+  let stripH = 0;
+  if (remaining>0 && ew>0){ stripH = Math.min(topOfFront-ey, remaining/ew); s += `<rect x="${ex}" y="${topOfFront-stripH}" width="${ew}" height="${stripH}" fill="var(--park)" stroke="var(--line)"/>`; }
+  if (c.keepArea>0) s += `<text x="${ex+cw+Math.max(pw,0)/2}" y="${ey+ed-6}" text-anchor="middle" font-size="10" font-family="Public Sans,sans-serif" fill="var(--ink-2)">${i.keep} spaces kept</text>`;
+  // housing zone
+  const hzTop = ey, hzBot = topOfFront - stripH - 8;
+  const t = c.t, gap = 8;
+  const cols = Math.max(0, Math.floor((ew + gap) / (t.fpW + gap)));
+  const rows = Math.max(0, Math.floor((hzBot - hzTop + gap) / (t.fpD + gap + 6)));
+  const fit = cols*rows;
+  const draw = Math.min(c.units, fit);
+  for (let k=0;k<draw;k++){
+    const r = Math.floor(k/cols), col = k%cols;
+    const x = ex + col*(t.fpW+gap), y = hzTop + r*(t.fpD+gap+6);
+    s += `<rect class="unitblk" x="${x}" y="${y}" width="${t.fpW}" height="${t.fpD}" rx="1.5" fill="var(--unit)"/>`;
+  }
+  // street + dims
+  s += `<line x1="${pad-10}" y1="${pad+D+14}" x2="${pad+W+10}" y2="${pad+D+14}" stroke="var(--ink-2)" stroke-width="1"/>`;
+  s += `<text x="${pad+W/2}" y="${pad+D+28}" text-anchor="middle" font-size="11" font-family="Public Sans,sans-serif" fill="var(--ink-2)">${esc(i.address||"Street")} (frontage ${i.w} ft)</text>`;
+  s += `<text x="${pad-10}" y="${pad+D/2}" text-anchor="middle" font-size="11" font-family="Public Sans,sans-serif" fill="var(--ink-2)" transform="rotate(-90 ${pad-12} ${pad+D/2})">${i.d} ft deep</text>`;
+  svg.innerHTML = s;
+  return {fit, draw};
+}
+
+function render(){
+  const i = readInputs(), c = calc(i);
+  const p = drawPlat(i,c);
+  $("platTitle").textContent = (i.church || "Site") + " sketch";
+  const acres = (c.lot/43560).toFixed(2);
+  $("math").innerHTML = `
+    <div><b>${c.lot.toLocaleString()}</b><span>sq ft lot (${acres} ac)</span></div>
+    <div><b>${Math.round(c.housingLand).toLocaleString()}</b><span>sq ft free inside setbacks after church and kept parking</span></div>
+    <div class="${c.binding==="density"?"bind":""}"><b>${c.byDensity}</b><span>units allowed by density (lot ÷ ${i.dens.toLocaleString()})</span></div>
+    <div class="${c.binding!=="density"?"bind":""}"><b>${c.byLand}</b><span>${c.t.label} that fit with ${i.pk} parking per unit</span></div>
+    <div><b>~${c.units}</b><span>rough estimate; limited by ${c.binding}</span></div>`;
+  let note = "Shaded box is the tighter limit. Assumes 330 sq ft per parking space and 30% of open land for paths and yards.";
+  if (p.fit < c.units) note += ` The sketch only fits ${p.fit} at this layout, so the real number may be lower.`;
+  $("calcNote").textContent = note;
+  return {i,c,p};
+}
+document.querySelectorAll("#f input,#f select").forEach(el => el.addEventListener("input", render));
+render();
+
+function esc(s){return String(s??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));}
+
+/* ---- Server API ---- */
+let feasData = null, presData = null, siteSnap = null;
+async function api(path, body){
+  const r = await fetch(path, {method: body===undefined ? "GET" : "POST", headers:{"Content-Type":"application/json"}, credentials:"same-origin", body: body===undefined ? undefined : JSON.stringify(body)});
+  let data = {}; try { data = await r.json(); } catch {}
+  if (r.status === 401 && path !== "/api/login") { showSignin(); throw new Error("Your session ended. Sign in again."); }
+  if (!r.ok) throw new Error(data.error || `Request failed (${r.status}).`);
+  return data;
+}
+const smooth = () => matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+
+function showSignin(){ $("appView").classList.add("hidden"); $("signinView").classList.remove("hidden"); $("email").focus(); }
+function showApp(sess){
+  $("signinView").classList.add("hidden"); $("appView").classList.remove("hidden");
+  $("who").textContent = "Signed in as " + sess.email;
+  $("mockFlag").classList.toggle("hidden", !sess.mock);
+  render();
+}
+$("signinForm").onsubmit = async (ev) => {
+  ev.preventDefault();
+  $("signinBtn").disabled = true; $("signinStatus").className = "status"; $("signinStatus").textContent = "Signing in.";
+  try { await api("/api/login", {email:$("email").value, password:$("pw").value}); $("pw").value=""; showApp(await api("/api/session")); $("signinStatus").textContent=""; }
+  catch(e){ $("signinStatus").className = "status err"; $("signinStatus").textContent = e.message; }
+  finally { $("signinBtn").disabled = false; }
+};
+$("signout").onclick = async () => { try { await api("/api/logout", {}); } catch {} feasData = presData = null; $("feas").classList.add("hidden"); $("pres").classList.add("hidden"); showSignin(); };
+api("/api/session").then(s => s.signedIn ? showApp(s) : showSignin()).catch(() => showSignin());
+
+$("run").onclick = async () => {
+  const {i,c} = render();
+  siteSnap = {i,c};
+  $("run").disabled = true;
+  $("runStatus").className = "status";
+  $("runStatus").textContent = "Reading your zoning text and site numbers. This usually takes under a minute.";
+  try {
+    feasData = await api("/api/feasibility", {inputs:i});
+    showFeas(feasData);
+    $("pres").classList.add("hidden"); presData = null;
+    $("runStatus").textContent = "Done. Scroll down for the snapshot.";
+    $("feas").scrollIntoView({behavior: smooth()});
+  } catch(e) {
+    $("runStatus").className = "status err"; $("runStatus").textContent = e.message;
+  } finally { $("run").disabled = false; }
+};
+
+function showFeas(d){
+  $("feas").classList.remove("hidden");
+  const v = (d.verdict||"").toLowerCase();
+  const vc = v.startsWith("prom") ? "v-promising" : v.startsWith("diff") ? "v-difficult" : "v-relief";
+  $("verdict").className = "verdict " + vc;
+  $("verdict").textContent = v ? v.charAt(0).toUpperCase()+v.slice(1) : "Needs review";
+  $("headline").textContent = d.headline || "";
+  $("constraints").innerHTML = (d.constraints||[]).map(r => {
+    const ok = r.confidence === "cited" && r.citation;
+    return `<tr><td><b>${esc(r.rule)}</b></td><td>${esc(r.finding)}</td><td class="cite ${ok?"ok":"no"}">${ok ? esc(r.citation) : "Unverified: confirm with planner"}</td></tr>`;
+  }).join("");
+  $("obstacles").innerHTML = (d.obstacles||[]).map(o => `
+    <div class="obst"><h3>${esc(o.obstacle)}</h3><p>${esc(o.why)}</p>
+    <p class="counter">${esc(o.counterpoint)}</p>
+    <p class="hint" style="font-size:.85rem">Ask: ${esc(o.expert)}</p></div>`).join("");
+  $("financing").innerHTML = (d.financing||[]).map(f => `<li><b>${esc(f.source)}.</b> ${esc(f.fit)}</li>`).join("");
+  $("questions").innerHTML = (d.questions||[]).map(q => `<li>${esc(q)}</li>`).join("");
+}
+
+$("makePres").onclick = async () => {
+  if (!feasData || !siteSnap) return;
+  $("makePres").disabled = true;
+  $("presStatus").className = "status";
+  $("presStatus").textContent = "Drafting slides, a one-pager and talking points. This can take a minute.";
+  try {
+    presData = await api("/api/presentation", {inputs: siteSnap.i, feasibility: feasData});
+    showPres(presData);
+    $("presStatus").textContent = "";
+    $("pres").scrollIntoView({behavior: smooth()});
+  } catch(e) {
+    $("presStatus").className = "status err"; $("presStatus").textContent = e.message;
+  } finally { $("makePres").disabled = false; }
+};
+
+let si = 0;
+function showSlide(){
+  const s = presData.slides || [];
+  if (!s.length) return;
+  si = Math.max(0, Math.min(si, s.length-1));
+  const sl = s[si];
+  $("slide").innerHTML = `<div class="num">${si+1} of ${s.length}</div><h3>${esc(sl.title)}</h3><ul>${(sl.bullets||[]).map(b=>`<li>${esc(b)}</li>`).join("")}</ul>`;
+  $("slideNotes").textContent = sl.notes ? "Speaker notes: " + sl.notes : "";
+  $("slideCount").textContent = `Slide ${si+1} of ${s.length}`;
+  $("prev").disabled = si===0; $("next").disabled = si===s.length-1;
+}
+$("prev").onclick = () => { si--; showSlide(); };
+$("next").onclick = () => { si++; showSlide(); };
+document.addEventListener("keydown", e => {
+  if ($("pres").classList.contains("hidden") || !presData || /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) return;
+  if (e.key === "ArrowRight") { si++; showSlide(); } else if (e.key === "ArrowLeft") { si--; showSlide(); }
+});
+
+function showPres(p){
+  $("pres").classList.remove("hidden");
+  si = 0; showSlide();
+  const o = p.onepager || {};
+  $("onepager").innerHTML = `<h3>${esc(o.title)}</h3><p class="tag">${esc(o.tagline)}</p>` +
+    (o.sections||[]).map(s=>`<h4>${esc(s.heading)}</h4><p>${esc(s.body)}</p>`).join("");
+  $("talk").innerHTML = (p.talking_points||[]).map(t=>`<div class="tp"><h3>${esc(t.audience)}</h3><ul class="tight">${(t.points||[]).map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`).join("");
+  $("save").classList.remove("hidden");
+}
+
+document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => {
+  document.querySelectorAll(".tabs button").forEach(x => x.setAttribute("aria-selected", x===b ? "true":"false"));
+  document.querySelectorAll("[data-panel]").forEach(p => p.classList.toggle("hidden", p.dataset.panel !== b.dataset.tab));
+});
+
+$("save").onclick = () => {
+  const p = presData, o = p.onepager||{}, {i} = siteSnap;
+  const slides = (p.slides||[]).map((s,k)=>`<section class="s"><small>${k+1}</small><h2>${esc(s.title)}</h2><ul>${(s.bullets||[]).map(b=>`<li>${esc(b)}</li>`).join("")}</ul><p class="n">${esc(s.notes||"")}</p></section>`).join("");
+  const html = `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>${esc(o.title||i.church)}</title>
+<style>body{font:16px/1.55 Georgia,serif;color:#1F2E3A;margin:0}.s{page-break-after:always;min-height:90vh;padding:8vh 8vw;background:#1F2E3A;color:#EEF2EE;box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}.s h2{font-size:2.2rem;margin:.2em 0 .6em}.s li{font-size:1.25rem;margin:.3em 0}.n{opacity:.7;font-size:.9rem;margin-top:2em}.doc{max-width:70ch;margin:0 auto;padding:6vh 6vw}h1{margin:0}h3{margin-top:1.4em}.warn{border-left:4px solid #B8892B;padding-left:12px;font-size:.9rem}</style></head><body>
+${slides}
+<div class="doc"><h1>${esc(o.title)}</h1><p><em>${esc(o.tagline)}</em></p>${(o.sections||[]).map(s=>`<h3>${esc(s.heading)}</h3><p>${esc(s.body)}</p>`).join("")}
+<h2>Talking points</h2>${(p.talking_points||[]).map(t=>`<h3>${esc(t.audience)}</h3><ul>${(t.points||[]).map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`).join("")}
+<p class="warn">Early exploration only. Not a legal, zoning or financial determination. All findings require review by an architect, land-use attorney and city planner.</p></div></body></html>`;
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([html], {type:"text/html"}));
+  a.download = (i.church||"church").replace(/[^a-z0-9]+/gi,"-").toLowerCase() + "-housing-presentation.html";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  $("saveStatus").textContent = "Downloaded. Open it in a browser and print to PDF for a council handout.";
+};
+</script>
+</body>
+</html>
